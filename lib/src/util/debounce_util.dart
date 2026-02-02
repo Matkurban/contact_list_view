@@ -1,5 +1,6 @@
 import 'dart:async';
 
+/// 默认防抖时间 / Default debounce duration.
 const Duration debounceDuration = Duration(milliseconds: 500);
 
 typedef Debounceable<S, T> = Future<S?> Function(T parameter);
@@ -27,13 +28,17 @@ Debounceable<S, T> debounce<S, T>(Debounceable<S?, T> function, {Duration? debou
 
 // A wrapper around Timer used for debouncing.
 class DebounceTimer {
+  /// 自定义防抖时间 / Custom debounce duration.
   final Duration? debounceTime;
 
   DebounceTimer({this.debounceTime}) {
     _timer = Timer(debounceTime ?? debounceDuration, _onComplete);
   }
 
+  /// 内部定时器 / Internal timer.
   late final Timer _timer;
+
+  /// 完成通知器 / Completion notifier.
   final Completer<void> _completer = Completer<void>();
 
   void _onComplete() {

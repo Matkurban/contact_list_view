@@ -18,28 +18,37 @@ class ContactStickyHeader extends StatelessWidget {
     required this.textTheme,
   });
 
-  /// 分组字母
+  /// 分组字母 / Section tag.
   final String tag;
 
-  /// 是否处于固定状态
+  /// 是否处于固定状态 / Whether the header is pinned.
   final bool isPinned;
 
+  /// 是否启用粘性 / Whether sticky is enabled.
   final bool sticky;
 
+  /// 头部高度 / Header height.
   final double stickyHeaderHeight;
 
+  /// 头部动画时长 / Header animation duration.
   final Duration stickyHeaderAnimatedContainerDuration;
 
+  /// 头部内边距 / Header padding.
   final EdgeInsets? stickyHeaderPadding;
 
+  /// 头部背景构建器 / Header decoration builder.
   final ContactStickyHeaderBoxDecorationBuilder? stickyHeaderBoxDecorationBuilder;
 
+  /// 头部文字样式 / Header text style builder.
   final ContactStickyHeaderTextStyleBuilder? stickyHeaderTextStyleBuilder;
 
+  /// 头部对齐 / Header alignment.
   final Alignment? stickyHeaderAlignment;
 
+  /// 颜色方案 / Color scheme.
   final ColorScheme colorScheme;
 
+  /// 文本主题 / Text theme.
   final TextTheme textTheme;
 
   @override

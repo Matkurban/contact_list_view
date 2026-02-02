@@ -19,31 +19,37 @@ class ContactIndexBar extends StatefulWidget {
     required this.colorScheme,
   });
 
-  /// 父容器的 Key，用于计算游标相对位置
+  /// 父容器的 Key，用于计算游标相对位置 / Parent key for cursor positioning.
   final GlobalKey parentKey;
 
-  /// 字母列表
+  /// 字母列表 / Index symbols.
   final List<String> symbols;
 
-  /// 当前选中的字母索引
+  /// 当前选中的字母索引 / Selected index.
   final int selectedIndex;
 
-  /// 选中字母变化时的回调
+  /// 选中字母变化时的回调 / Selection update callback.
   final void Function(int index, Offset cursorOffset)? onSelectionUpdate;
 
-  /// 选择结束时的回调
+  /// 选择结束时的回调 / Selection end callback.
   final VoidCallback? onSelectionEnd;
 
+  /// 索引条尺寸 / Index bar item size.
   final double indexBarSize;
 
+  /// 索引条背景构建器 / Index bar decoration builder.
   final ContactIndexBarBoxDecorationBuilder? indexBarBoxDecoration;
 
+  /// 索引条文字样式 / Index bar text style builder.
   final ContactIndexBarTextStyleBuilder? indexBarTextStyle;
 
+  /// 索引条对齐 / Index bar item alignment.
   final Alignment? indexBarItemAlignment;
 
+  /// 选中动画时长 / Selection animation duration.
   final Duration indexBarAnimatedContainerDuration;
 
+  /// 颜色方案 / Color scheme.
   final ColorScheme colorScheme;
 
   @override
@@ -51,11 +57,13 @@ class ContactIndexBar extends StatefulWidget {
 }
 
 class _ContactIndexBarState extends State<ContactIndexBar> {
+  /// 内部滚动控制器 / Internal scroll controller.
   late final ScrollController scrollController;
 
+  /// 观察控制器 / Observer controller.
   late final ListObserverController listObserverController;
 
-  /// 记录当前手指所在的偏移量
+  /// 记录当前手指所在的偏移量 / Current pointer offset.
   double observeOffset = 0;
 
   @override

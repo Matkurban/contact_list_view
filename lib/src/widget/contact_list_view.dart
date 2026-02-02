@@ -43,54 +43,79 @@ class ContactListView<T> extends StatefulWidget {
     this.stickyHeaderAlignment,
   });
 
+  /// 联系人列表 / Source contact list.
   final List<T> contactsList;
 
+  /// 列表头部 Sliver / Leading slivers.
   final List<Widget> startSlivers;
 
+  /// 列表尾部 Sliver / Trailing slivers.
   final List<Widget> endSlivers;
 
+  /// 标签提取器 / Tag selector.
   final String Function(T model) tag;
 
+  /// 列表项构建器 / Item builder.
   final ContactListItemBuilder<T> itemBuilder;
 
+  /// 游标容器尺寸 / Cursor container size.
   final double cursorContainerSize;
 
+  /// 游标右侧偏移 / Cursor right offset.
   final double cursorPositionedRight;
 
+  /// 游标构建器 / Cursor builder.
   final ContactCursorBuilder? cursorBuilder;
 
+  /// 是否启用粘性头部 / Enable sticky headers.
   final bool sticky;
 
+  /// 是否显示头部 / Show sticky header.
   final bool showStickyHeader;
 
+  /// 头部高度 / Sticky header height.
   final double stickyHeaderHeight;
 
+  /// 头部构建器 / Sticky header builder.
   final ContactStickyHeaderBuilder? stickyHeaderBuilder;
 
+  /// 索引条右侧偏移 / Index bar right offset.
   final double indexBarPositionedRight;
 
+  /// 索引条尺寸 / Index bar item size.
   final double indexBarSize;
 
+  /// 索引条背景构建器 / Index bar decoration builder.
   final ContactIndexBarBoxDecorationBuilder? indexBarBoxDecorationBuilder;
 
+  /// 索引条文字样式 / Index bar text style builder.
   final ContactIndexBarTextStyleBuilder? indexBarTextStyleBuilder;
 
+  /// 索引条整体对齐 / Index bar alignment.
   final Alignment? indexBarAlignment;
 
+  /// 索引条项对齐 / Index bar item alignment.
   final Alignment? indexBarItemAlignment;
 
+  /// 游标动画时长 / Cursor animation duration.
   final Duration cursorAnimatedPositionedDuration;
 
+  /// 索引条动画时长 / Index bar animation duration.
   final Duration indexBarAnimatedContainerDuration;
 
+  /// 头部动画时长 / Sticky header animation duration.
   final Duration stickyHeaderAnimatedContainerDuration;
 
+  /// 头部内边距 / Sticky header padding.
   final EdgeInsets? stickyHeaderPadding;
 
+  /// 头部背景构建器 / Sticky header decoration builder.
   final ContactStickyHeaderBoxDecorationBuilder? stickyHeaderBoxDecorationBuilder;
 
+  /// 头部文字样式 / Sticky header text style builder.
   final ContactStickyHeaderTextStyleBuilder? stickyHeaderTextStyleBuilder;
 
+  /// 头部对齐 / Sticky header alignment.
   final Alignment? stickyHeaderAlignment;
 
   @override
@@ -98,26 +123,34 @@ class ContactListView<T> extends StatefulWidget {
 }
 
 class _ContactListViewState<T> extends State<ContactListView<T>> {
+  /// 索引条容器 Key / Index bar container key.
   final GlobalKey _indexBarContainerKey = GlobalKey();
 
+  /// 列表滚动控制器 / Scroll controller.
   late final ScrollController _scrollController;
 
+  /// Sliver 观察控制器 / Sliver observer controller.
   late final SliverObserverController _sliverObserverController;
 
+  /// Sliver Context 缓存 / Sliver context cache.
   final Map<int, BuildContext> _sliverContextMap = <int, BuildContext>{};
 
+  /// 分组后的联系人 / Grouped contacts.
   late List<ContactListModel<T>> _contactModelList = <ContactListModel<T>>[];
 
+  /// 索引字母列表 / Index symbols.
   late List<String> _symbols = <String>[];
 
+  /// 游标信息信号 / Cursor info signal.
   final Signal<ContactListCursorInfoModel?> _cursorInfo = Signal<ContactListCursorInfoModel?>(
     null,
     autoDispose: true,
   );
 
+  /// 当前选中索引 / Selected index.
   final Signal<int> _selectIndex = Signal<int>(-1, autoDispose: true);
 
-  /// 用于延迟更新选中状态的定时器
+  /// 用于延迟更新选中状态的定时器 / Debounced selection updater.
   late final Debounceable<bool, int> _schedulePinnedSelection = debounce<bool, int>(
     _updateSelection,
     debounceTime: const Duration(milliseconds: 10),
