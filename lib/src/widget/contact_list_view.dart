@@ -36,7 +36,9 @@ class ContactListView<T> extends StatefulWidget {
     this.indexBarItemAlignment,
     this.cursorAnimatedPositionedDuration = const Duration(milliseconds: 150),
     this.indexBarAnimatedContainerDuration = const Duration(milliseconds: 150),
-    this.stickyHeaderAnimatedContainerDuration = const Duration(milliseconds: 150),
+    this.stickyHeaderAnimatedContainerDuration = const Duration(
+      milliseconds: 150,
+    ),
     this.stickyHeaderPadding,
     this.stickyHeaderBoxDecorationBuilder,
     this.stickyHeaderTextStyleBuilder,
@@ -110,7 +112,8 @@ class ContactListView<T> extends StatefulWidget {
   final EdgeInsets? stickyHeaderPadding;
 
   /// 头部背景构建器 / Sticky header decoration builder.
-  final ContactStickyHeaderBoxDecorationBuilder? stickyHeaderBoxDecorationBuilder;
+  final ContactStickyHeaderBoxDecorationBuilder?
+  stickyHeaderBoxDecorationBuilder;
 
   /// 头部文字样式 / Sticky header text style builder.
   final ContactStickyHeaderTextStyleBuilder? stickyHeaderTextStyleBuilder;
@@ -142,25 +145,26 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
   late List<String> _symbols = <String>[];
 
   /// 游标信息信号 / Cursor info signal.
-  final Signal<ContactListCursorInfoModel?> _cursorInfo = Signal<ContactListCursorInfoModel?>(
-    null,
-    autoDispose: true,
-  );
+  final Signal<ContactListCursorInfoModel?> _cursorInfo =
+      Signal<ContactListCursorInfoModel?>(null, autoDispose: true);
 
   /// 当前选中索引 / Selected index.
   final Signal<int> _selectIndex = Signal<int>(-1, autoDispose: true);
 
   /// 用于延迟更新选中状态的定时器 / Debounced selection updater.
-  late final Debounceable<bool, int> _schedulePinnedSelection = debounce<bool, int>(
-    _updateSelection,
-    debounceTime: const Duration(milliseconds: 10),
-  );
+  late final Debounceable<bool, int> _schedulePinnedSelection =
+      debounce<bool, int>(
+        _updateSelection,
+        debounceTime: const Duration(milliseconds: 10),
+      );
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _sliverObserverController = SliverObserverController(controller: _scrollController);
+    _sliverObserverController = SliverObserverController(
+      controller: _scrollController,
+    );
     _generateContactList();
   }
 
@@ -217,7 +221,10 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
   /// [cursorOffset] 游标显示位置
   void _onSelectionUpdate(int index, Offset cursorOffset) {
     // 更新游标数据，来显示游标
-    _cursorInfo.value = ContactListCursorInfoModel(title: _symbols[index], offset: cursorOffset);
+    _cursorInfo.value = ContactListCursorInfoModel(
+      title: _symbols[index],
+      offset: cursorOffset,
+    );
     // 取出字母对应的联系人列表视图 SliverList 的 BuildContext
     final sliverContext = _sliverContextMap[index];
     if (sliverContext == null) return;
@@ -269,7 +276,10 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                       visible: widget.showStickyHeader,
                       replacement: SizedBox(height: 0.1),
                       child:
-                          widget.stickyHeaderBuilder?.call(contactListModel.tag, state.isPinned) ??
+                          widget.stickyHeaderBuilder?.call(
+                            contactListModel.tag,
+                            state.isPinned,
+                          ) ??
                           ContactStickyHeader(
                             stickyHeaderHeight: widget.stickyHeaderHeight,
                             tag: contactListModel.tag,
@@ -281,7 +291,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                             stickyHeaderAlignment: widget.stickyHeaderAlignment,
                             stickyHeaderBoxDecorationBuilder:
                                 widget.stickyHeaderBoxDecorationBuilder,
-                            stickyHeaderTextStyleBuilder: widget.stickyHeaderTextStyleBuilder,
+                            stickyHeaderTextStyleBuilder:
+                                widget.stickyHeaderTextStyleBuilder,
                             colorScheme: colorScheme,
                             textTheme: textTheme,
                           ),
@@ -306,7 +317,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
             cursorContainerSize: widget.cursorContainerSize,
             cursorPositionedRight: widget.cursorPositionedRight,
             cursorBuilder: widget.cursorBuilder,
-            cursorAnimatedPositionedDuration: widget.cursorAnimatedPositionedDuration,
+            cursorAnimatedPositionedDuration:
+                widget.cursorAnimatedPositionedDuration,
             textTheme: textTheme,
             colorScheme: colorScheme,
           );
@@ -330,7 +342,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                 indexBarBoxDecoration: widget.indexBarBoxDecorationBuilder,
                 indexBarTextStyle: widget.indexBarTextStyleBuilder,
                 indexBarItemAlignment: widget.indexBarItemAlignment,
-                indexBarAnimatedContainerDuration: widget.indexBarAnimatedContainerDuration,
+                indexBarAnimatedContainerDuration:
+                    widget.indexBarAnimatedContainerDuration,
                 colorScheme: colorScheme,
               );
             }),

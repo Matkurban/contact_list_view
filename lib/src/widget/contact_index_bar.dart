@@ -70,7 +70,9 @@ class _ContactIndexBarState extends State<ContactIndexBar> {
   void initState() {
     super.initState();
     scrollController = ScrollController();
-    listObserverController = ListObserverController(controller: scrollController);
+    listObserverController = ListObserverController(
+      controller: scrollController,
+    );
   }
 
   @override
@@ -87,13 +89,17 @@ class _ContactIndexBarState extends State<ContactIndexBar> {
   /// 处理开始触摸以及触摸滑动
   void _onGestureHandler(dynamic details) async {
     // details 的类型有可能是 DragDownDetails，也有可能是 DragUpdateDetails
-    if (details is! DragUpdateDetails && details is! DragDownDetails && details is! TapUpDetails) {
+    if (details is! DragUpdateDetails &&
+        details is! DragDownDetails &&
+        details is! TapUpDetails) {
       return;
     }
     observeOffset = details.localPosition.dy;
 
     // 触发一次观察
-    final result = await listObserverController.dispatchOnceObserve(isDependObserveCallback: false);
+    final result = await listObserverController.dispatchOnceObserve(
+      isDependObserveCallback: false,
+    );
     final observeResult = result.observeResult;
     if (observeResult == null) return;
 
