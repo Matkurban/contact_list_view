@@ -8,6 +8,11 @@ topics:
   - azlistview
   - contact
   - chat
+screenshots:
+  - description: 'contact list'
+    path: doc/images/Screenshot_20260202_224751.jpg
+  - description: 'contact list'
+    path: doc/images/Screenshot_20260202_222935.jpg
 
 
 environment:
