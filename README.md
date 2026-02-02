@@ -1,39 +1,85 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# contact_list_view
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+A Flutter contact list widget with sticky headers and an index bar.
+Flutter 联系人列表组件，支持粘性分组头和字母索引条。
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Features / 特性
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+- Sticky section headers with optional custom builders / 粘性分组头，支持自定义构建器
+- Alphabet index bar with cursor indicator / 字母索引条与游标提示
+- Customizable styles, animations, and alignments / 支持样式、动画与对齐方式定制
+- Sliver-based list for large data sets / 基于 Sliver，适配大数据量列表
 
-## Features
+|                         ScreenShot                         |                                                                                      ScreenShot                                                                                       |
+|:----------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| ![Screenshot 1](doc/images/Screenshot_20260202_222935.jpg) | <video src="https://github.com/Matkurban/contact_list_view/blob/master/doc/videos/Screenrecording_20260202_222939.mp4" width="375" controls title="演示视频">您的浏览器不支持 HTML5 视频标签。</video> |
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
 
-## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+## Getting started / 快速开始
 
-## Usage
+Add to `pubspec.yaml`:
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+```yaml
+dependencies:
+  contact_list_view: ^lasted
 ```
 
-## Additional information
+Then run:
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```bash
+flutter pub get
+```
+
+## Usage / 用法
+
+```dart
+import 'package:contact_list_view/contact_list_view.dart';
+import 'package:flutter/material.dart';
+
+class Contact {
+  Contact(this.name);
+  final String name;
+}
+
+class DemoPage extends StatelessWidget {
+  const DemoPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Contact> contacts = [
+      Contact('Alice'),
+      Contact('Bob'),
+      Contact('张三'),
+      Contact('李四'),
+    ];
+
+    String tagSelector(Contact c) {
+      final String first = c.name.trim().isNotEmpty ? c.name.trim()[0] : '#';
+      final String upper = first.toUpperCase();
+      return RegExp(r'[A-Z]').hasMatch(upper) ? upper : '#';
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Contacts')),
+      body: ContactListView<Contact>(
+        contactsList: contacts,
+        tag: tagSelector,
+        itemBuilder: (contact) => ListTile(title: Text(contact.name)),
+        stickyHeaderHeight: 32,
+      ),
+    );
+  }
+}
+```
+
+## Customization / 自定义
+
+- `stickyHeaderBuilder`: build your own header / 自定义分组头
+- `cursorBuilder`: customize the cursor / 自定义游标
+- `indexBarBoxDecorationBuilder` and `indexBarTextStyleBuilder`: style index items / 定制索引条样式
+
+## Additional information / 其他信息
+
+- Example app: `example/`
+- Issues & contributions are welcome / 欢迎提交 Issue 与 PR
