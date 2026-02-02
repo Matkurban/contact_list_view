@@ -10,9 +10,9 @@ Flutter 联系人列表组件，支持粘性分组头和字母索引条。
 - Customizable styles, animations, and alignments / 支持样式、动画与对齐方式定制
 - Sliver-based list for large data sets / 基于 Sliver，适配大数据量列表
 
-|                         ScreenShot                         |                                                                                      ScreenShot                                                                                       |
-|:----------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| ![Screenshot 1](doc/images/Screenshot_20260202_222935.jpg) | <video src="https://github.com/Matkurban/contact_list_view/blob/master/doc/videos/Screenrecording_20260202_222939.mp4" width="375" controls title="演示视频">您的浏览器不支持 HTML5 视频标签。</video> |
+|                         ScreenShot                         | ScreenShot |
+|:----------------------------------------------------------:|:----------:|
+| ![Screenshot 1](doc/images/Screenshot_20260202_222935.jpg) |    [[doc/videos/Screenrecording_20260202_222939.mp4]]    |
 
 
 
