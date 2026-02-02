@@ -4,7 +4,15 @@ import 'package:flutter/material.dart';
 typedef ContactListItemBuilder<T> = Widget Function(T model);
 
 ///头部自定义
-typedef ContactSectionHeaderBuilder = Widget Function(String tag, bool isPinned);
+typedef ContactStickyHeaderBuilder = Widget Function(String tag, bool isPinned);
 
 ///浮标自定义
-typedef CursorBuilder = Widget Function(String title);
+typedef ContactCursorBuilder = Widget Function(String title);
+
+typedef ContactIndexBarBoxDecorationBuilder = BoxDecoration Function(bool isSelected);
+
+typedef ContactIndexBarTextStyleBuilder = TextStyle Function(bool isSelected);
+
+typedef ContactStickyHeaderBoxDecorationBuilder = BoxDecoration Function(bool isPinned);
+
+typedef ContactStickyHeaderTextStyleBuilder = TextStyle Function(bool isPinned);

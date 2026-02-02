@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
 
-/// 通用字母索引栏组件
-///
-/// 显示在列表右侧的字母导航栏，支持点击和滑动选择字母
-class ContactIndexBarWidget extends StatefulWidget {
-  const ContactIndexBarWidget({
+import '../define/define_type.dart';
+
+class ContactIndexBar extends StatefulWidget {
+  const ContactIndexBar({
     super.key,
     required this.parentKey,
     required this.symbols,
     required this.selectedIndex,
-    required this.colorScheme,
     this.onSelectionUpdate,
     this.onSelectionEnd,
+    required this.indexBarSize,
+    this.indexBarBoxDecoration,
+    this.indexBarTextStyle,
+    this.indexBarItemAlignment,
+    required this.indexBarAnimatedContainerDuration,
+    required this.colorScheme,
   });
 
   /// 父容器的 Key，用于计算游标相对位置
@@ -24,19 +28,29 @@ class ContactIndexBarWidget extends StatefulWidget {
   /// 当前选中的字母索引
   final int selectedIndex;
 
-  final ColorScheme colorScheme;
-
   /// 选中字母变化时的回调
   final void Function(int index, Offset cursorOffset)? onSelectionUpdate;
 
   /// 选择结束时的回调
   final VoidCallback? onSelectionEnd;
 
+  final double indexBarSize;
+
+  final ContactIndexBarBoxDecorationBuilder? indexBarBoxDecoration;
+
+  final ContactIndexBarTextStyleBuilder? indexBarTextStyle;
+
+  final Alignment? indexBarItemAlignment;
+
+  final Duration indexBarAnimatedContainerDuration;
+
+  final ColorScheme colorScheme;
+
   @override
-  State<ContactIndexBarWidget> createState() => _ContactIndexBarWidgetState();
+  State<ContactIndexBar> createState() => _ContactIndexBarState();
 }
 
-class _ContactIndexBarWidgetState extends State<ContactIndexBarWidget> {
+class _ContactIndexBarState extends State<ContactIndexBar> {
   late final ScrollController scrollController;
 
   late final ListObserverController listObserverController;
@@ -114,21 +128,25 @@ class _ContactIndexBarWidgetState extends State<ContactIndexBarWidget> {
           itemBuilder: (BuildContext context, int index) {
             final bool isSelected = widget.selectedIndex == index;
             return AnimatedContainer(
-              width: 16,
-              height: 16,
-              duration: const Duration(milliseconds: 100),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected ? widget.colorScheme.primary : null,
-              ),
+              width: widget.indexBarSize,
+              height: widget.indexBarSize,
+              duration: widget.indexBarAnimatedContainerDuration,
+              alignment: widget.indexBarItemAlignment ?? Alignment.center,
+              decoration:
+                  widget.indexBarBoxDecoration?.call(isSelected) ??
+                  BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected ? widget.colorScheme.primary : null,
+                  ),
               child: Text(
                 widget.symbols[index],
-                style: TextStyle(
-                  fontSize: 9,
-                  color: isSelected ? widget.colorScheme.onPrimary : null,
-                  fontWeight: FontWeight.bold,
-                ),
+                style:
+                    widget.indexBarTextStyle?.call(isSelected) ??
+                    TextStyle(
+                      fontSize: 9,
+                      color: isSelected ? widget.colorScheme.onPrimary : null,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             );
           },

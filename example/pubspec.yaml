@@ -40,6 +40,7 @@ dependencies:
   string_validator: ^1.2.0
   contact_list_view:
     path: ../
+  easy_refresh: ^3.4.0
 
 dev_dependencies:
   flutter_test:
