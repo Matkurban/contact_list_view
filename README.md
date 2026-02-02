@@ -12,7 +12,7 @@ Flutter 联系人列表组件，支持粘性分组头和字母索引条。
 
 |                         ScreenShot                         | ScreenShot |
 |:----------------------------------------------------------:|:----------:|
-| ![Screenshot 1](doc/images/Screenshot_20260202_222935.jpg) |    [[doc/videos/Screenrecording_20260202_222939.mp4]]    |
+| ![Screenshot 1](doc/images/Screenshot_20260202_222935.jpg) |    [![视频预览图](doc/images/Screenshot_20260202_222935.jpg)](doc/videos/Screenrecording_20260202_222939.mp4)    |
 
 
 
