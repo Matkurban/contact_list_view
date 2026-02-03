@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
 import 'package:signals/signals_flutter.dart';
 
+import '../../package/flutter_sticky_header/flutter_sticky_header.dart';
 import '../define/define_type.dart';
 import '../model/contact_list_cursor_info_model.dart';
 import '../model/contact_list_model.dart';
@@ -22,7 +22,6 @@ class ContactListView<T> extends StatefulWidget {
     required this.tag,
     required this.itemBuilder,
     this.sticky = true,
-    this.showStickyHeader = true,
     this.stickyHeaderHeight = 32,
     this.stickyHeaderBuilder,
     this.cursorContainerSize = 40,
@@ -71,9 +70,6 @@ class ContactListView<T> extends StatefulWidget {
 
   /// 是否启用粘性头部 / Enable sticky headers.
   final bool sticky;
-
-  /// 是否显示头部 / Show sticky header.
-  final bool showStickyHeader;
 
   /// 头部高度 / Sticky header height.
   final double stickyHeaderHeight;
@@ -253,12 +249,14 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
           controller: _sliverObserverController,
           sliverContexts: () => _sliverContextMap.values.toList(),
           onObserveViewport: (result) {
-            SliverViewportObserveDisplayingChildModel model = result.firstChild;
-            _sliverContextMap.entries.map((entry) {
+            final SliverViewportObserveDisplayingChildModel model =
+                result.firstChild;
+            for (final entry in _sliverContextMap.entries) {
               if (entry.value == model.sliverContext) {
                 _selectIndex.value = entry.key;
+                break;
               }
-            });
+            }
           },
           child: CustomScrollView(
             controller: _scrollController,
@@ -268,39 +266,34 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                 int index = entry.key;
                 final ContactListModel<T> contactListModel = entry.value;
                 return SliverStickyHeader.builder(
-                  builder: (context, state) {
+                  sticky: widget.sticky,
+                  builder: (_, state) {
                     if (state.isPinned) {
                       _schedulePinnedSelection(index);
                     }
-                    return Visibility(
-                      visible: widget.showStickyHeader,
-                      replacement: SizedBox(height: 0.1),
-                      child:
-                          widget.stickyHeaderBuilder?.call(
-                            contactListModel.tag,
-                            state.isPinned,
-                          ) ??
-                          ContactStickyHeader(
-                            stickyHeaderHeight: widget.stickyHeaderHeight,
-                            tag: contactListModel.tag,
-                            isPinned: state.isPinned,
-                            stickyHeaderAnimatedContainerDuration:
-                                widget.stickyHeaderAnimatedContainerDuration,
-                            sticky: widget.sticky,
-                            stickyHeaderPadding: widget.stickyHeaderPadding,
-                            stickyHeaderAlignment: widget.stickyHeaderAlignment,
-                            stickyHeaderBoxDecorationBuilder:
-                                widget.stickyHeaderBoxDecorationBuilder,
-                            stickyHeaderTextStyleBuilder:
-                                widget.stickyHeaderTextStyleBuilder,
-                            colorScheme: colorScheme,
-                            textTheme: textTheme,
-                          ),
-                    );
+                    return widget.stickyHeaderBuilder?.call(
+                          contactListModel.tag,
+                          state.isPinned,
+                        ) ??
+                        ContactStickyHeader(
+                          stickyHeaderHeight: widget.stickyHeaderHeight,
+                          tag: contactListModel.tag,
+                          isPinned: state.isPinned && widget.sticky,
+                          stickyHeaderAnimatedContainerDuration:
+                              widget.stickyHeaderAnimatedContainerDuration,
+                          stickyHeaderPadding: widget.stickyHeaderPadding,
+                          stickyHeaderAlignment: widget.stickyHeaderAlignment,
+                          stickyHeaderBoxDecorationBuilder:
+                              widget.stickyHeaderBoxDecorationBuilder,
+                          stickyHeaderTextStyleBuilder:
+                              widget.stickyHeaderTextStyleBuilder,
+                          colorScheme: colorScheme,
+                          textTheme: textTheme,
+                        );
                   },
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate((context, modelIndex) {
-                      _sliverContextMap[index] ??= context;
+                      _sliverContextMap[index] = context;
                       final T model = contactListModel.contacts[modelIndex];
                       return widget.itemBuilder(model);
                     }, childCount: contactListModel.contacts.length),

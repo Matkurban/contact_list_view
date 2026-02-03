@@ -1,6 +1,6 @@
 name: contact_list_view
 description: "A Flutter contact list widget with sticky headers and an index bar."
-version: 1.0.0
+version: 1.1.0
 homepage: https://github.com/Matkurban
 repository: https://github.com/Matkurban/contact_list_view
 topics:
@@ -24,7 +24,8 @@ dependencies:
     sdk: flutter
   signals: ^6.3.0
   scrollview_observer: ^1.26.3
-  flutter_sticky_header: ^0.8.0
+  value_layout_builder: ^0.5.0
+  visibility_detector: ^0.4.0+2
 
 dev_dependencies:
   flutter_test:

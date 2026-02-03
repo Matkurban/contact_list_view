@@ -7,7 +7,6 @@ class ContactStickyHeader extends StatelessWidget {
     super.key,
     required this.tag,
     required this.isPinned,
-    required this.sticky,
     required this.stickyHeaderHeight,
     required this.stickyHeaderAnimatedContainerDuration,
     this.stickyHeaderPadding,
@@ -23,9 +22,6 @@ class ContactStickyHeader extends StatelessWidget {
 
   /// 是否处于固定状态 / Whether the header is pinned.
   final bool isPinned;
-
-  /// 是否启用粘性 / Whether sticky is enabled.
-  final bool sticky;
 
   /// 头部高度 / Header height.
   final double stickyHeaderHeight;
@@ -54,9 +50,6 @@ class ContactStickyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isPinned && !sticky) {
-      return SizedBox(height: stickyHeaderHeight);
-    }
     return AnimatedContainer(
       height: stickyHeaderHeight,
       duration: stickyHeaderAnimatedContainerDuration,

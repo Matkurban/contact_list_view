@@ -1,5 +1,6 @@
 import 'package:example/app_theme.dart';
 import 'package:example/contact_page.dart';
+import 'package:example/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,27 +17,27 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: .system,
-      home: HomePage(),
+      home: IndexPage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class IndexPage extends StatefulWidget {
+  const IndexPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<IndexPage> createState() => _IndexPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _IndexPageState extends State<IndexPage> {
   late final PageController pageController;
 
-  late int currentIndex = 1;
+  late int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    pageController = PageController(initialPage: 1);
+    pageController = PageController(initialPage: 0);
   }
 
   void onTap(int index) {
@@ -69,7 +70,7 @@ class _HomePageState extends State<HomePage> {
         controller: pageController,
         onPageChanged: onChanged,
         children: [
-          Placeholder(child: Text('Home')),
+          HomePage(),
           ContactPage(),
           Placeholder(child: Text('Mine')),
         ],

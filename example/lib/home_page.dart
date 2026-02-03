@@ -5,15 +5,19 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:example/user.dart';
 import 'package:flutter/material.dart';
 
-class ContactPage extends StatefulWidget {
-  const ContactPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<ContactPage> createState() => _ContactPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _ContactPageState extends State<ContactPage> {
+class _HomePageState extends State<HomePage> {
   final List<User> userList = [];
+
+  late bool isRefreshing = false;
+
+  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -30,8 +34,14 @@ class _ContactPageState extends State<ContactPage> {
   }
 
   Future<void> onRefresh() async {
+    setState(() {
+      isRefreshing = true;
+    });
     await Future.delayed(Duration(seconds: 2));
     setState(() {
+      setState(() {
+        isRefreshing = false;
+      });
       userList.addAll(
         List.generate(
           26,
@@ -54,24 +64,14 @@ class _ContactPageState extends State<ContactPage> {
         title: Text('ContactList'),
         centerTitle: true,
         toolbarHeight: 48,
+        backgroundColor: colorScheme.surfaceContainerHigh,
       ),
       body: EasyRefresh(
         onRefresh: onRefresh,
         child: ContactListView<User>(
           contactsList: userList,
           tag: getTag,
-          sticky: true,
-          startSlivers: [
-            SliverToBoxAdapter(
-              child: ListTile(dense: true, title: Text('新的朋友')),
-            ),
-            SliverToBoxAdapter(
-              child: ListTile(dense: true, title: Text('我的群聊')),
-            ),
-            SliverToBoxAdapter(
-              child: ListTile(dense: true, title: Text('群通知')),
-            ),
-          ],
+          sticky: false,
           endSlivers: [
             SliverToBoxAdapter(
               child: Center(child: Text('总共${userList.length}位好友')),
