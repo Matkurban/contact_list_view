@@ -15,32 +15,26 @@ class ContactPage extends StatefulWidget {
 class _ContactPageState extends State<ContactPage> {
   final List<User> userList = [];
 
+  static const int _initialUserCount = 120;
+
+  List<User> _buildTestUsers({required int count, int startIndex = 0}) {
+    return List.generate(count, (i) {
+      final int index = startIndex + i;
+      final String letter = String.fromCharCode(97 + (index % 26));
+      return User(userID: index.toString(), nickname: '$letter$index');
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    userList.addAll(
-      List.generate(
-        26,
-        (i) => User(
-          userID: i.toString(),
-          nickname: "${String.fromCharCode(97 + i).toLowerCase()}$i",
-        ),
-      ),
-    );
+    userList.addAll(_buildTestUsers(count: _initialUserCount));
   }
 
   Future<void> onRefresh() async {
     await Future.delayed(Duration(seconds: 2));
     setState(() {
-      userList.addAll(
-        List.generate(
-          26,
-          (i) => User(
-            userID: i.toString(),
-            nickname: "${String.fromCharCode(97 + i).toLowerCase()}$i",
-          ),
-        ),
-      );
+      userList.addAll(_buildTestUsers(count: 26, startIndex: userList.length));
     });
   }
 

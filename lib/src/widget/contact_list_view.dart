@@ -33,10 +33,10 @@ class ContactListView<T> extends StatefulWidget {
     this.indexBarTextStyleBuilder,
     this.indexBarAlignment,
     this.indexBarItemAlignment,
-    this.cursorAnimatedPositionedDuration = const Duration(milliseconds: 150),
-    this.indexBarAnimatedContainerDuration = const Duration(milliseconds: 150),
+    this.cursorAnimatedPositionedDuration = const Duration(milliseconds: 0),
+    this.indexBarAnimatedContainerDuration = const Duration(milliseconds: 0),
     this.stickyHeaderAnimatedContainerDuration = const Duration(
-      milliseconds: 150,
+      milliseconds: 0,
     ),
     this.stickyHeaderPadding,
     this.stickyHeaderBoxDecorationBuilder,
@@ -131,8 +131,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
   /// Sliver 观察控制器 / Sliver observer controller.
   late final SliverObserverController _sliverObserverController;
 
-  /// Sliver Context 缓存 / Sliver context cache.
-  final Map<int, BuildContext> _sliverContextMap = <int, BuildContext>{};
+  /// 每个分组 SliverList 的 Key / Key for each section SliverList.
+  final Map<int, GlobalKey> _sliverListKeyMap = <int, GlobalKey>{};
 
   /// 分组后的联系人 / Grouped contacts.
   late List<ContactListModel<T>> _contactModelList = <ContactListModel<T>>[];
@@ -198,9 +198,15 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
       if (b.tag == '#') return -1;
       return a.tag.compareTo(b.tag);
     });
-    _sliverContextMap.clear();
     _contactModelList = list;
     _symbols = _contactModelList.map((item) => item.tag).toList();
+    _sliverListKeyMap
+      ..clear()
+      ..addEntries(
+        List.generate(_contactModelList.length, (index) {
+          return MapEntry(index, GlobalKey());
+        }),
+      );
   }
 
   /// 当 sticky header 固定时，延迟更新选中状态
@@ -221,8 +227,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
       title: _symbols[index],
       offset: cursorOffset,
     );
-    // 取出字母对应的联系人列表视图 SliverList 的 BuildContext
-    final sliverContext = _sliverContextMap[index];
+    // 取出字母对应分组 SliverList 的 BuildContext
+    final sliverContext = _sliverListKeyMap[index]?.currentContext;
     if (sliverContext == null) return;
     // 跳到对应的字母章节的第一个 item 的位置
     _sliverObserverController.jumpTo(
@@ -247,12 +253,17 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
       children: [
         SliverViewObserver(
           controller: _sliverObserverController,
-          sliverContexts: () => _sliverContextMap.values.toList(),
+          sliverContexts: () {
+            return _sliverListKeyMap.values
+                .map((key) => key.currentContext)
+                .whereType<BuildContext>()
+                .toList();
+          },
           onObserveViewport: (result) {
             final SliverViewportObserveDisplayingChildModel model =
                 result.firstChild;
-            for (final entry in _sliverContextMap.entries) {
-              if (entry.value == model.sliverContext) {
+            for (final entry in _sliverListKeyMap.entries) {
+              if (entry.value.currentContext == model.sliverContext) {
                 _selectIndex.value = entry.key;
                 break;
               }
@@ -265,6 +276,7 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
               ..._contactModelList.asMap().entries.map((entry) {
                 int index = entry.key;
                 final ContactListModel<T> contactListModel = entry.value;
+                final GlobalKey sliverListKey = _sliverListKeyMap[index]!;
                 return SliverStickyHeader.builder(
                   sticky: widget.sticky,
                   builder: (_, state) {
@@ -292,8 +304,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                         );
                   },
                   sliver: SliverList(
+                    key: sliverListKey,
                     delegate: SliverChildBuilderDelegate((context, modelIndex) {
-                      _sliverContextMap[index] = context;
                       final T model = contactListModel.contacts[modelIndex];
                       return widget.itemBuilder(model);
                     }, childCount: contactListModel.contacts.length),

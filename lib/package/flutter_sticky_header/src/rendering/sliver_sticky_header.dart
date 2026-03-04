@@ -381,10 +381,11 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
 
   @override
   double childMainAxisPosition(RenderObject? child) {
-    if (child == header)
+    if (child == header) {
       return _isPinned
           ? 0.0
           : -(constraints.scrollOffset + constraints.overlap);
+    }
     if (child == this.child) {
       return calculatePaintOffset(
         constraints,

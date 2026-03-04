@@ -1,3 +1,9 @@
+## 1.1.1
+
+- Fix section jump failures on index drag by using `SliverList`-level contexts instead of list item contexts
+- Fix index highlight sync mismatch in viewport observation by aligning section context tracking
+- Fix index cursor vertical offset calculation (`height` instead of `width`)
+
 ## 1.1.0
 
 - Remove `showStickyHeader` properties

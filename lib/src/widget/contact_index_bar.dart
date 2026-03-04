@@ -117,7 +117,7 @@ class _ContactIndexBarState extends State<ContactIndexBar> {
 
     final cursorOffset = Offset(
       firstChildRenderObjOffset.dx,
-      firstChildRenderObjOffset.dy + firstChildModel.size.width * 0.5,
+      firstChildRenderObjOffset.dy + firstChildModel.size.height * 0.5,
     );
     widget.onSelectionUpdate?.call(firstChildIndex, cursorOffset);
   }
