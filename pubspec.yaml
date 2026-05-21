@@ -1,6 +1,6 @@
 name: contact_list_view
 description: "A Flutter sliver-based contact list with A-Z index navigation, sticky section headers, and extensible builders for index, cursor, and header rendering."
-version: 1.1.1
+version: 1.2.0
 homepage: https://github.com/Matkurban
 repository: https://github.com/Matkurban/contact_list_view
 topics:
@@ -16,13 +16,13 @@ screenshots:
 
 
 environment:
-  sdk: ^3.10.0
-  flutter: ">=3.38.1"
+  sdk: ^3.12.0
+  flutter: ">=3.44.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  signals: ^6.3.0
+  signals_flutter: ^6.3.0
   scrollview_observer: ^1.26.3
   value_layout_builder: ^0.5.0
 

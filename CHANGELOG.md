@@ -1,3 +1,7 @@
+## 1.2.0
+
+- migrate to signals_flutter package and update ContactListView with scrollCacheExtent and keyboardDismissBehavior support
+
 ## 1.1.1
 
 - Fix section jump failures on index drag by using `SliverList`-level contexts instead of list item contexts

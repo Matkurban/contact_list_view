@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
-import 'package:signals/signals_flutter.dart';
+import 'package:signals_flutter/signals_flutter.dart';
 
 import '../../package/flutter_sticky_header/flutter_sticky_header.dart';
 import '../define/define_type.dart';
@@ -35,13 +36,13 @@ class ContactListView<T> extends StatefulWidget {
     this.indexBarItemAlignment,
     this.cursorAnimatedPositionedDuration = const Duration(milliseconds: 0),
     this.indexBarAnimatedContainerDuration = const Duration(milliseconds: 0),
-    this.stickyHeaderAnimatedContainerDuration = const Duration(
-      milliseconds: 0,
-    ),
+    this.stickyHeaderAnimatedContainerDuration = const Duration(milliseconds: 0),
     this.stickyHeaderPadding,
     this.stickyHeaderBoxDecorationBuilder,
     this.stickyHeaderTextStyleBuilder,
     this.stickyHeaderAlignment,
+    this.scrollCacheExtent,
+    this.keyboardDismissBehavior,
   });
 
   /// 联系人列表 / Source contact list.
@@ -108,8 +109,7 @@ class ContactListView<T> extends StatefulWidget {
   final EdgeInsets? stickyHeaderPadding;
 
   /// 头部背景构建器 / Sticky header decoration builder.
-  final ContactStickyHeaderBoxDecorationBuilder?
-  stickyHeaderBoxDecorationBuilder;
+  final ContactStickyHeaderBoxDecorationBuilder? stickyHeaderBoxDecorationBuilder;
 
   /// 头部文字样式 / Sticky header text style builder.
   final ContactStickyHeaderTextStyleBuilder? stickyHeaderTextStyleBuilder;
@@ -117,11 +117,24 @@ class ContactListView<T> extends StatefulWidget {
   /// 头部对齐 / Sticky header alignment.
   final Alignment? stickyHeaderAlignment;
 
+  /// {@macro flutter.rendering.RenderViewportBase.scrollCacheExtent}
+  final ScrollCacheExtent? scrollCacheExtent;
+
+  /// {@template flutter.widgets.scroll_view.keyboardDismissBehavior}
+  /// The [ScrollViewKeyboardDismissBehavior] defines how this [ScrollView] will
+  /// dismiss the keyboard automatically.
+  /// {@endtemplate}
+  ///
+  /// If [keyboardDismissBehavior] is null then it will fallback to
+  /// [scrollBehavior]. If that is also null, the inherited
+  /// [ScrollBehavior.getKeyboardDismissBehavior] will be used.
+  final ScrollViewKeyboardDismissBehavior? keyboardDismissBehavior;
+
   @override
   State<ContactListView<T>> createState() => _ContactListViewState<T>();
 }
 
-class _ContactListViewState<T> extends State<ContactListView<T>> {
+class _ContactListViewState<T> extends State<ContactListView<T>> with SignalsMixin {
   /// 索引条容器 Key / Index bar container key.
   final GlobalKey _indexBarContainerKey = GlobalKey();
 
@@ -141,26 +154,23 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
   late List<String> _symbols = <String>[];
 
   /// 游标信息信号 / Cursor info signal.
-  final Signal<ContactListCursorInfoModel?> _cursorInfo =
-      Signal<ContactListCursorInfoModel?>(null, autoDispose: true);
+  late final FlutterSignal<ContactListCursorInfoModel?> _cursorInfo =
+      createSignal<ContactListCursorInfoModel?>(null);
 
   /// 当前选中索引 / Selected index.
-  final Signal<int> _selectIndex = Signal<int>(-1, autoDispose: true);
+  late final FlutterSignal<int> _selectIndex = createSignal<int>(-1);
 
   /// 用于延迟更新选中状态的定时器 / Debounced selection updater.
-  late final Debounceable<bool, int> _schedulePinnedSelection =
-      debounce<bool, int>(
-        _updateSelection,
-        debounceTime: const Duration(milliseconds: 10),
-      );
+  late final Debounceable<bool, int> _schedulePinnedSelection = debounce<bool, int>(
+    _updateSelection,
+    debounceTime: const Duration(milliseconds: 16),
+  );
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _sliverObserverController = SliverObserverController(
-      controller: _scrollController,
-    );
+    _sliverObserverController = SliverObserverController(controller: _scrollController);
     _generateContactList();
   }
 
@@ -223,10 +233,7 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
   /// [cursorOffset] 游标显示位置
   void _onSelectionUpdate(int index, Offset cursorOffset) {
     // 更新游标数据，来显示游标
-    _cursorInfo.value = ContactListCursorInfoModel(
-      title: _symbols[index],
-      offset: cursorOffset,
-    );
+    _cursorInfo.value = ContactListCursorInfoModel(title: _symbols[index], offset: cursorOffset);
     // 取出字母对应分组 SliverList 的 BuildContext
     final sliverContext = _sliverListKeyMap[index]?.currentContext;
     if (sliverContext == null) return;
@@ -260,8 +267,7 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                 .toList();
           },
           onObserveViewport: (result) {
-            final SliverViewportObserveDisplayingChildModel model =
-                result.firstChild;
+            final SliverViewportObserveDisplayingChildModel model = result.firstChild;
             for (final entry in _sliverListKeyMap.entries) {
               if (entry.value.currentContext == model.sliverContext) {
                 _selectIndex.value = entry.key;
@@ -271,6 +277,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
           },
           child: CustomScrollView(
             controller: _scrollController,
+            scrollCacheExtent: widget.scrollCacheExtent,
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
             slivers: [
               ...widget.startSlivers,
               ..._contactModelList.asMap().entries.map((entry) {
@@ -283,10 +291,7 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                     if (state.isPinned) {
                       _schedulePinnedSelection(index);
                     }
-                    return widget.stickyHeaderBuilder?.call(
-                          contactListModel.tag,
-                          state.isPinned,
-                        ) ??
+                    return widget.stickyHeaderBuilder?.call(contactListModel.tag, state.isPinned) ??
                         ContactStickyHeader(
                           stickyHeaderHeight: widget.stickyHeaderHeight,
                           tag: contactListModel.tag,
@@ -295,10 +300,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                               widget.stickyHeaderAnimatedContainerDuration,
                           stickyHeaderPadding: widget.stickyHeaderPadding,
                           stickyHeaderAlignment: widget.stickyHeaderAlignment,
-                          stickyHeaderBoxDecorationBuilder:
-                              widget.stickyHeaderBoxDecorationBuilder,
-                          stickyHeaderTextStyleBuilder:
-                              widget.stickyHeaderTextStyleBuilder,
+                          stickyHeaderBoxDecorationBuilder: widget.stickyHeaderBoxDecorationBuilder,
+                          stickyHeaderTextStyleBuilder: widget.stickyHeaderTextStyleBuilder,
                           colorScheme: colorScheme,
                           textTheme: textTheme,
                         );
@@ -322,8 +325,7 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
             cursorContainerSize: widget.cursorContainerSize,
             cursorPositionedRight: widget.cursorPositionedRight,
             cursorBuilder: widget.cursorBuilder,
-            cursorAnimatedPositionedDuration:
-                widget.cursorAnimatedPositionedDuration,
+            cursorAnimatedPositionedDuration: widget.cursorAnimatedPositionedDuration,
             textTheme: textTheme,
             colorScheme: colorScheme,
           );
@@ -347,8 +349,7 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                 indexBarBoxDecoration: widget.indexBarBoxDecorationBuilder,
                 indexBarTextStyle: widget.indexBarTextStyleBuilder,
                 indexBarItemAlignment: widget.indexBarItemAlignment,
-                indexBarAnimatedContainerDuration:
-                    widget.indexBarAnimatedContainerDuration,
+                indexBarAnimatedContainerDuration: widget.indexBarAnimatedContainerDuration,
                 colorScheme: colorScheme,
               );
             }),
