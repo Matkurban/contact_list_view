@@ -25,10 +25,8 @@ class _HomePageState extends State<HomePage> {
     userList.addAll(
       List.generate(
         26,
-        (i) => User(
-          userID: i.toString(),
-          nickname: "${String.fromCharCode(97 + i).toLowerCase()}$i",
-        ),
+        (i) =>
+            User(userID: i.toString(), nickname: "${String.fromCharCode(97 + i).toLowerCase()}$i"),
       ),
     );
   }
@@ -72,11 +70,7 @@ class _HomePageState extends State<HomePage> {
           contactsList: userList,
           tag: getTag,
           sticky: false,
-          endSlivers: [
-            SliverToBoxAdapter(
-              child: Center(child: Text('总共${userList.length}位好友')),
-            ),
-          ],
+          endSlivers: [SliverToBoxAdapter(child: Center(child: Text('总共${userList.length}位好友')))],
           itemBuilder: (User model) {
             return ListTile(
               dense: true,
@@ -85,16 +79,11 @@ class _HomePageState extends State<HomePage> {
               leading: Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: .circular(4),
-                ),
+                decoration: BoxDecoration(color: colorScheme.primary, borderRadius: .circular(4)),
                 alignment: .center,
                 child: Text(
                   getTag(model),
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onPrimary,
-                  ),
+                  style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
                 ),
               ),
               title: Text(model.nickname),
@@ -105,9 +94,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton.small(
         onPressed: () {
           setState(() {
-            userList.add(
-              User(userID: "123", nickname: 'Kurban${Random().nextInt(100)}'),
-            );
+            userList.add(User(userID: "123", nickname: 'Kurban${Random().nextInt(100)}'));
           });
           debugPrint("userList:${userList.length.toString()}");
         },

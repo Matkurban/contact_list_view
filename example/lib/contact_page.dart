@@ -44,11 +44,7 @@ class _ContactPageState extends State<ContactPage> {
     final TextTheme textTheme = theme.textTheme;
     final ColorScheme colorScheme = theme.colorScheme;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('ContactList'),
-        centerTitle: true,
-        toolbarHeight: 48,
-      ),
+      appBar: AppBar(title: Text('ContactList'), centerTitle: true, toolbarHeight: 48),
       body: EasyRefresh(
         onRefresh: onRefresh,
         child: ContactListView<User>(
@@ -56,21 +52,11 @@ class _ContactPageState extends State<ContactPage> {
           tag: getTag,
           sticky: true,
           startSlivers: [
-            SliverToBoxAdapter(
-              child: ListTile(dense: true, title: Text('新的朋友')),
-            ),
-            SliverToBoxAdapter(
-              child: ListTile(dense: true, title: Text('我的群聊')),
-            ),
-            SliverToBoxAdapter(
-              child: ListTile(dense: true, title: Text('群通知')),
-            ),
+            SliverToBoxAdapter(child: ListTile(dense: true, title: Text('新的朋友'))),
+            SliverToBoxAdapter(child: ListTile(dense: true, title: Text('我的群聊'))),
+            SliverToBoxAdapter(child: ListTile(dense: true, title: Text('群通知'))),
           ],
-          endSlivers: [
-            SliverToBoxAdapter(
-              child: Center(child: Text('总共${userList.length}位好友')),
-            ),
-          ],
+          endSlivers: [SliverToBoxAdapter(child: Center(child: Text('总共${userList.length}位好友')))],
           itemBuilder: (User model) {
             return ListTile(
               dense: true,
@@ -79,16 +65,11 @@ class _ContactPageState extends State<ContactPage> {
               leading: Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: .circular(4),
-                ),
+                decoration: BoxDecoration(color: colorScheme.primary, borderRadius: .circular(4)),
                 alignment: .center,
                 child: Text(
                   getTag(model),
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onPrimary,
-                  ),
+                  style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
                 ),
               ),
               title: Text(model.nickname),
@@ -99,9 +80,7 @@ class _ContactPageState extends State<ContactPage> {
       floatingActionButton: FloatingActionButton.small(
         onPressed: () {
           setState(() {
-            userList.add(
-              User(userID: "123", nickname: 'Kurban${Random().nextInt(100)}'),
-            );
+            userList.add(User(userID: "123", nickname: 'Kurban${Random().nextInt(100)}'));
           });
           debugPrint("userList:${userList.length.toString()}");
         },

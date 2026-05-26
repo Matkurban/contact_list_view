@@ -33,8 +33,7 @@ class ContactStickyHeader extends StatelessWidget {
   final EdgeInsets? stickyHeaderPadding;
 
   /// 头部背景构建器 / Header decoration builder.
-  final ContactStickyHeaderBoxDecorationBuilder?
-  stickyHeaderBoxDecorationBuilder;
+  final ContactStickyHeaderBoxDecorationBuilder? stickyHeaderBoxDecorationBuilder;
 
   /// 头部文字样式 / Header text style builder.
   final ContactStickyHeaderTextStyleBuilder? stickyHeaderTextStyleBuilder;
@@ -60,18 +59,10 @@ class ContactStickyHeader extends StatelessWidget {
           BoxDecoration(
             color: colorScheme.surface,
             border: isPinned
-                ? Border(
-                    bottom: BorderSide(
-                      color: colorScheme.surfaceContainerHighest,
-                    ),
-                  )
+                ? Border(bottom: BorderSide(color: colorScheme.surfaceContainerHighest))
                 : null,
             boxShadow: [
-              if (isPinned)
-                BoxShadow(
-                  color: colorScheme.surfaceContainerHighest,
-                  blurRadius: 16,
-                ),
+              if (isPinned) BoxShadow(color: colorScheme.surfaceContainerHighest, blurRadius: 16),
             ],
           ),
       child: Text(

@@ -1,3 +1,7 @@
+## 1.3.0
+
+- refactor: apply code formatting and update signals_flutter to 7.0.0 with signals_lint integration
+
 ## 1.2.0
 
 - migrate to signals_flutter package and update ContactListView with scrollCacheExtent and keyboardDismissBehavior support

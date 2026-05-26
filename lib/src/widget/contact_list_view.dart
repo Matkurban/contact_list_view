@@ -14,7 +14,7 @@ import 'contact_cursor.dart';
 import 'contact_index_bar.dart';
 import 'contact_sticky_header.dart';
 
-class ContactListView<T> extends StatefulWidget {
+class ContactListView<T> extends SignalStatefulWidget {
   const ContactListView({
     super.key,
     required this.contactsList,
@@ -134,7 +134,7 @@ class ContactListView<T> extends StatefulWidget {
   State<ContactListView<T>> createState() => _ContactListViewState<T>();
 }
 
-class _ContactListViewState<T> extends State<ContactListView<T>> with SignalsMixin {
+class _ContactListViewState<T> extends State<ContactListView<T>> {
   /// 索引条容器 Key / Index bar container key.
   final GlobalKey _indexBarContainerKey = GlobalKey();
 
@@ -155,10 +155,10 @@ class _ContactListViewState<T> extends State<ContactListView<T>> with SignalsMix
 
   /// 游标信息信号 / Cursor info signal.
   late final FlutterSignal<ContactListCursorInfoModel?> _cursorInfo =
-      createSignal<ContactListCursorInfoModel?>(null);
+      signal<ContactListCursorInfoModel?>(null);
 
   /// 当前选中索引 / Selected index.
-  late final FlutterSignal<int> _selectIndex = createSignal<int>(-1);
+  late final FlutterSignal<int> _selectIndex = signal<int>(-1);
 
   /// 用于延迟更新选中状态的定时器 / Debounced selection updater.
   late final Debounceable<bool, int> _schedulePinnedSelection = debounce<bool, int>(
@@ -319,17 +319,19 @@ class _ContactListViewState<T> extends State<ContactListView<T>> with SignalsMix
             ],
           ),
         ),
-        Watch((context) {
-          return ContactCursor(
-            cursorInfo: _cursorInfo.value,
-            cursorContainerSize: widget.cursorContainerSize,
-            cursorPositionedRight: widget.cursorPositionedRight,
-            cursorBuilder: widget.cursorBuilder,
-            cursorAnimatedPositionedDuration: widget.cursorAnimatedPositionedDuration,
-            textTheme: textTheme,
-            colorScheme: colorScheme,
-          );
-        }),
+        SignalBuilder(
+          builder: (context) {
+            return ContactCursor(
+              cursorInfo: _cursorInfo.value,
+              cursorContainerSize: widget.cursorContainerSize,
+              cursorPositionedRight: widget.cursorPositionedRight,
+              cursorBuilder: widget.cursorBuilder,
+              cursorAnimatedPositionedDuration: widget.cursorAnimatedPositionedDuration,
+              textTheme: textTheme,
+              colorScheme: colorScheme,
+            );
+          },
+        ),
         Positioned(
           top: 0,
           right: widget.indexBarPositionedRight,
@@ -338,21 +340,23 @@ class _ContactListViewState<T> extends State<ContactListView<T>> with SignalsMix
             key: _indexBarContainerKey,
             width: widget.indexBarSize,
             alignment: widget.indexBarAlignment ?? Alignment.center,
-            child: Watch((context) {
-              return ContactIndexBar(
-                parentKey: _indexBarContainerKey,
-                symbols: _symbols.toList(),
-                selectedIndex: _selectIndex.value,
-                onSelectionUpdate: _onSelectionUpdate,
-                onSelectionEnd: _onSelectionEnd,
-                indexBarSize: widget.indexBarSize,
-                indexBarBoxDecoration: widget.indexBarBoxDecorationBuilder,
-                indexBarTextStyle: widget.indexBarTextStyleBuilder,
-                indexBarItemAlignment: widget.indexBarItemAlignment,
-                indexBarAnimatedContainerDuration: widget.indexBarAnimatedContainerDuration,
-                colorScheme: colorScheme,
-              );
-            }),
+            child: SignalBuilder(
+              builder: (context) {
+                return ContactIndexBar(
+                  parentKey: _indexBarContainerKey,
+                  symbols: _symbols.toList(),
+                  selectedIndex: _selectIndex.value,
+                  onSelectionUpdate: _onSelectionUpdate,
+                  onSelectionEnd: _onSelectionEnd,
+                  indexBarSize: widget.indexBarSize,
+                  indexBarBoxDecoration: widget.indexBarBoxDecorationBuilder,
+                  indexBarTextStyle: widget.indexBarTextStyleBuilder,
+                  indexBarItemAlignment: widget.indexBarItemAlignment,
+                  indexBarAnimatedContainerDuration: widget.indexBarAnimatedContainerDuration,
+                  colorScheme: colorScheme,
+                );
+              },
+            ),
           ),
         ),
       ],
