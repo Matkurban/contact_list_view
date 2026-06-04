@@ -1,6 +1,10 @@
+## 1.3.1
+
+- update signals_flutter to 7.1.0 and scrollview_observer to 1.27.0, upgrade signals_lint to 7.1.0
+
 ## 1.3.0
 
-- refactor: apply code formatting and update signals_flutter to 7.0.0 with signals_lint integration
+- apply code formatting and update signals_flutter to 7.0.0 with signals_lint integration
 
 ## 1.2.0
 
