@@ -18,8 +18,11 @@ class ContactListView<T> extends SignalStatefulWidget {
   const ContactListView({
     super.key,
     required this.contactsList,
-    this.startSlivers = const <Widget>[],
-    this.endSlivers = const <Widget>[],
+    required this.itemExtent,
+    this.startChildren = const <Widget>[],
+    required this.startItemExtent,
+    this.endChildren = const <Widget>[],
+    required this.endItemExtent,
     required this.tag,
     required this.itemBuilder,
     this.sticky = true,
@@ -36,7 +39,9 @@ class ContactListView<T> extends SignalStatefulWidget {
     this.indexBarItemAlignment,
     this.cursorAnimatedPositionedDuration = const Duration(milliseconds: 0),
     this.indexBarAnimatedContainerDuration = const Duration(milliseconds: 0),
-    this.stickyHeaderAnimatedContainerDuration = const Duration(milliseconds: 0),
+    this.stickyHeaderAnimatedContainerDuration = const Duration(
+      milliseconds: 0,
+    ),
     this.stickyHeaderPadding,
     this.stickyHeaderBoxDecorationBuilder,
     this.stickyHeaderTextStyleBuilder,
@@ -49,10 +54,14 @@ class ContactListView<T> extends SignalStatefulWidget {
   final List<T> contactsList;
 
   /// 列表头部 Sliver / Leading slivers.
-  final List<Widget> startSlivers;
+  final List<Widget> startChildren;
+
+  final double startItemExtent;
 
   /// 列表尾部 Sliver / Trailing slivers.
-  final List<Widget> endSlivers;
+  final List<Widget> endChildren;
+
+  final double endItemExtent;
 
   /// 标签提取器 / Tag selector.
   final String Function(T model) tag;
@@ -109,7 +118,8 @@ class ContactListView<T> extends SignalStatefulWidget {
   final EdgeInsets? stickyHeaderPadding;
 
   /// 头部背景构建器 / Sticky header decoration builder.
-  final ContactStickyHeaderBoxDecorationBuilder? stickyHeaderBoxDecorationBuilder;
+  final ContactStickyHeaderBoxDecorationBuilder?
+  stickyHeaderBoxDecorationBuilder;
 
   /// 头部文字样式 / Sticky header text style builder.
   final ContactStickyHeaderTextStyleBuilder? stickyHeaderTextStyleBuilder;
@@ -119,6 +129,9 @@ class ContactListView<T> extends SignalStatefulWidget {
 
   /// {@macro flutter.rendering.RenderViewportBase.scrollCacheExtent}
   final ScrollCacheExtent? scrollCacheExtent;
+
+  /// The extent the children are forced to have in the main axis.
+  final double itemExtent;
 
   /// {@template flutter.widgets.scroll_view.keyboardDismissBehavior}
   /// The [ScrollViewKeyboardDismissBehavior] defines how this [ScrollView] will
@@ -161,16 +174,19 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
   late final FlutterSignal<int> _selectIndex = signal<int>(-1);
 
   /// 用于延迟更新选中状态的定时器 / Debounced selection updater.
-  late final Debounceable<bool, int> _schedulePinnedSelection = debounce<bool, int>(
-    _updateSelection,
-    debounceTime: const Duration(milliseconds: 16),
-  );
+  late final Debounceable<bool, int> _schedulePinnedSelection =
+      debounce<bool, int>(
+        _updateSelection,
+        debounceTime: const Duration(milliseconds: 6),
+      );
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _sliverObserverController = SliverObserverController(controller: _scrollController);
+    _sliverObserverController = SliverObserverController(
+      controller: _scrollController,
+    );
     _generateContactList();
   }
 
@@ -233,7 +249,10 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
   /// [cursorOffset] 游标显示位置
   void _onSelectionUpdate(int index, Offset cursorOffset) {
     // 更新游标数据，来显示游标
-    _cursorInfo.value = ContactListCursorInfoModel(title: _symbols[index], offset: cursorOffset);
+    _cursorInfo.value = ContactListCursorInfoModel(
+      title: _symbols[index],
+      offset: cursorOffset,
+    );
     // 取出字母对应分组 SliverList 的 BuildContext
     final sliverContext = _sliverListKeyMap[index]?.currentContext;
     if (sliverContext == null) return;
@@ -267,7 +286,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                 .toList();
           },
           onObserveViewport: (result) {
-            final SliverViewportObserveDisplayingChildModel model = result.firstChild;
+            final SliverViewportObserveDisplayingChildModel model =
+                result.firstChild;
             for (final entry in _sliverListKeyMap.entries) {
               if (entry.value.currentContext == model.sliverContext) {
                 _selectIndex.value = entry.key;
@@ -280,7 +300,12 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
             scrollCacheExtent: widget.scrollCacheExtent,
             keyboardDismissBehavior: widget.keyboardDismissBehavior,
             slivers: [
-              ...widget.startSlivers,
+              SliverFixedExtentList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return widget.startChildren[index];
+                }, childCount: widget.startChildren.length),
+                itemExtent: widget.startItemExtent,
+              ),
               ..._contactModelList.asMap().entries.map((entry) {
                 int index = entry.key;
                 final ContactListModel<T> contactListModel = entry.value;
@@ -291,7 +316,10 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                     if (state.isPinned) {
                       _schedulePinnedSelection(index);
                     }
-                    return widget.stickyHeaderBuilder?.call(contactListModel.tag, state.isPinned) ??
+                    return widget.stickyHeaderBuilder?.call(
+                          contactListModel.tag,
+                          state.isPinned,
+                        ) ??
                         ContactStickyHeader(
                           stickyHeaderHeight: widget.stickyHeaderHeight,
                           tag: contactListModel.tag,
@@ -300,22 +328,31 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
                               widget.stickyHeaderAnimatedContainerDuration,
                           stickyHeaderPadding: widget.stickyHeaderPadding,
                           stickyHeaderAlignment: widget.stickyHeaderAlignment,
-                          stickyHeaderBoxDecorationBuilder: widget.stickyHeaderBoxDecorationBuilder,
-                          stickyHeaderTextStyleBuilder: widget.stickyHeaderTextStyleBuilder,
+                          stickyHeaderBoxDecorationBuilder:
+                              widget.stickyHeaderBoxDecorationBuilder,
+                          stickyHeaderTextStyleBuilder:
+                              widget.stickyHeaderTextStyleBuilder,
                           colorScheme: colorScheme,
                           textTheme: textTheme,
                         );
                   },
-                  sliver: SliverList(
+                  sliver: SliverFixedExtentList.builder(
                     key: sliverListKey,
-                    delegate: SliverChildBuilderDelegate((context, modelIndex) {
-                      final T model = contactListModel.contacts[modelIndex];
+                    itemExtent: widget.itemExtent,
+                    itemCount: contactListModel.contacts.length,
+                    itemBuilder: (context, index) {
+                      final T model = contactListModel.contacts[index];
                       return widget.itemBuilder(model);
-                    }, childCount: contactListModel.contacts.length),
+                    },
                   ),
                 );
               }),
-              ...widget.endSlivers,
+              SliverFixedExtentList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return widget.endChildren[index];
+                }, childCount: widget.endChildren.length),
+                itemExtent: widget.endItemExtent,
+              ),
             ],
           ),
         ),
@@ -326,7 +363,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
               cursorContainerSize: widget.cursorContainerSize,
               cursorPositionedRight: widget.cursorPositionedRight,
               cursorBuilder: widget.cursorBuilder,
-              cursorAnimatedPositionedDuration: widget.cursorAnimatedPositionedDuration,
+              cursorAnimatedPositionedDuration:
+                  widget.cursorAnimatedPositionedDuration,
               textTheme: textTheme,
               colorScheme: colorScheme,
             );
@@ -340,22 +378,19 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
             key: _indexBarContainerKey,
             width: widget.indexBarSize,
             alignment: widget.indexBarAlignment ?? Alignment.center,
-            child: SignalBuilder(
-              builder: (context) {
-                return ContactIndexBar(
-                  parentKey: _indexBarContainerKey,
-                  symbols: _symbols.toList(),
-                  selectedIndex: _selectIndex.value,
-                  onSelectionUpdate: _onSelectionUpdate,
-                  onSelectionEnd: _onSelectionEnd,
-                  indexBarSize: widget.indexBarSize,
-                  indexBarBoxDecoration: widget.indexBarBoxDecorationBuilder,
-                  indexBarTextStyle: widget.indexBarTextStyleBuilder,
-                  indexBarItemAlignment: widget.indexBarItemAlignment,
-                  indexBarAnimatedContainerDuration: widget.indexBarAnimatedContainerDuration,
-                  colorScheme: colorScheme,
-                );
-              },
+            child: ContactIndexBar(
+              parentKey: _indexBarContainerKey,
+              symbols: _symbols.toList(),
+              selectedIndex: _selectIndex,
+              onSelectionUpdate: _onSelectionUpdate,
+              onSelectionEnd: _onSelectionEnd,
+              indexBarSize: widget.indexBarSize,
+              indexBarBoxDecoration: widget.indexBarBoxDecorationBuilder,
+              indexBarTextStyle: widget.indexBarTextStyleBuilder,
+              indexBarItemAlignment: widget.indexBarItemAlignment,
+              indexBarAnimatedContainerDuration:
+                  widget.indexBarAnimatedContainerDuration,
+              colorScheme: colorScheme,
             ),
           ),
         ),

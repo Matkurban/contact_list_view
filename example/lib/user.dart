@@ -10,5 +10,7 @@ class User {
 
 String getTag(User user) {
   String fistChar = user.nickname.split('').first;
-  return isNumeric(fistChar) ? "#" : PinyinHelper.getShortPinyin(fistChar).toUpperCase();
+  return isNumeric(fistChar)
+      ? "#"
+      : PinyinHelper.getShortPinyin(fistChar).toUpperCase();
 }

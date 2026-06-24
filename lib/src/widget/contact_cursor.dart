@@ -53,7 +53,9 @@ class ContactCursor extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               cursorInfo!.title,
-              style: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
+              style: textTheme.titleMedium?.copyWith(
+                color: colorScheme.onPrimary,
+              ),
             ),
           ),
     );

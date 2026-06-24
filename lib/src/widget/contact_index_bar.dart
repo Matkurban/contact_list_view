@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scrollview_observer/scrollview_observer.dart';
+import 'package:signals_flutter/signals_flutter.dart';
 
 import '../define/define_type.dart';
 
@@ -26,7 +27,7 @@ class ContactIndexBar extends StatefulWidget {
   final List<String> symbols;
 
   /// 当前选中的字母索引 / Selected index.
-  final int selectedIndex;
+  final FlutterSignal<int> selectedIndex;
 
   /// 选中字母变化时的回调 / Selection update callback.
   final void Function(int index, Offset cursorOffset)? onSelectionUpdate;
@@ -66,11 +67,31 @@ class _ContactIndexBarState extends State<ContactIndexBar> {
   /// 记录当前手指所在的偏移量 / Current pointer offset.
   double observeOffset = 0;
 
+  late List<ReadonlySignal<bool>> _isSelectedSignals;
+
   @override
   void initState() {
     super.initState();
     scrollController = ScrollController();
-    listObserverController = ListObserverController(controller: scrollController);
+    listObserverController = ListObserverController(
+      controller: scrollController,
+    );
+    _initSignals();
+  }
+
+  void _initSignals() {
+    _isSelectedSignals = List.generate(
+      widget.symbols.length,
+      (index) => computed(() => widget.selectedIndex.value == index),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant ContactIndexBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.symbols.length != oldWidget.symbols.length) {
+      _initSignals();
+    }
   }
 
   @override
@@ -87,13 +108,17 @@ class _ContactIndexBarState extends State<ContactIndexBar> {
   /// 处理开始触摸以及触摸滑动
   void _onGestureHandler(dynamic details) async {
     // details 的类型有可能是 DragDownDetails，也有可能是 DragUpdateDetails
-    if (details is! DragUpdateDetails && details is! DragDownDetails && details is! TapUpDetails) {
+    if (details is! DragUpdateDetails &&
+        details is! DragDownDetails &&
+        details is! TapUpDetails) {
       return;
     }
     observeOffset = details.localPosition.dy;
 
     // 触发一次观察
-    final result = await listObserverController.dispatchOnceObserve(isDependObserveCallback: false);
+    final result = await listObserverController.dispatchOnceObserve(
+      isDependObserveCallback: false,
+    );
     final observeResult = result.observeResult;
     if (observeResult == null) return;
 
@@ -134,28 +159,34 @@ class _ContactIndexBarState extends State<ContactIndexBar> {
           shrinkWrap: true,
           itemCount: widget.symbols.length,
           itemBuilder: (BuildContext context, int index) {
-            final bool isSelected = widget.selectedIndex == index;
-            return AnimatedContainer(
-              width: widget.indexBarSize,
-              height: widget.indexBarSize,
-              duration: widget.indexBarAnimatedContainerDuration,
-              alignment: widget.indexBarItemAlignment ?? Alignment.center,
-              decoration:
-                  widget.indexBarBoxDecoration?.call(isSelected) ??
-                  BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isSelected ? widget.colorScheme.primary : null,
+            return SignalBuilder(
+              builder: (context) {
+                final bool isSelected = _isSelectedSignals[index].value;
+                return AnimatedContainer(
+                  width: widget.indexBarSize,
+                  height: widget.indexBarSize,
+                  duration: widget.indexBarAnimatedContainerDuration,
+                  alignment: widget.indexBarItemAlignment ?? Alignment.center,
+                  decoration:
+                      widget.indexBarBoxDecoration?.call(isSelected) ??
+                      BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isSelected ? widget.colorScheme.primary : null,
+                      ),
+                  child: Text(
+                    widget.symbols[index],
+                    style:
+                        widget.indexBarTextStyle?.call(isSelected) ??
+                        TextStyle(
+                          fontSize: 9,
+                          color: isSelected
+                              ? widget.colorScheme.onPrimary
+                              : null,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-              child: Text(
-                widget.symbols[index],
-                style:
-                    widget.indexBarTextStyle?.call(isSelected) ??
-                    TextStyle(
-                      fontSize: 9,
-                      color: isSelected ? widget.colorScheme.onPrimary : null,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
+                );
+              },
             );
           },
         ),

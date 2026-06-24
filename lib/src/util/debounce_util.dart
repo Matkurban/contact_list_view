@@ -9,7 +9,10 @@ typedef Debounceable<S, T> = Future<S?> Function(T parameter);
 ///
 /// This means that the original function will be called only after no calls
 /// have been made for the given Duration.
-Debounceable<S, T> debounce<S, T>(Debounceable<S?, T> function, {Duration? debounceTime}) {
+Debounceable<S, T> debounce<S, T>(
+  Debounceable<S?, T> function, {
+  Duration? debounceTime,
+}) {
   DebounceTimer? debounceTimer;
 
   return (T parameter) async {
