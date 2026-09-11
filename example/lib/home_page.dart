@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:contact_list_view/contact_list_view.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:example/user.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

@@ -1,5 +1,5 @@
 import 'package:contact_list_view/contact_list_view.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ContactCursor extends StatelessWidget {
   const ContactCursor({

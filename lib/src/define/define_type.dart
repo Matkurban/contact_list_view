@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// 单个联系人构建器 / Single contact item builder.
 typedef ContactListItemBuilder<T> = Widget Function(T model);
