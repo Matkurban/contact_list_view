@@ -199,6 +199,8 @@ class _ContactListViewState<T> extends State<ContactListView<T>> {
   @override
   void dispose() {
     super.dispose();
+    _cursorInfo.dispose();
+    _selectIndex.dispose();
     _scrollController.dispose();
   }
 
