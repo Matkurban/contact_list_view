@@ -1,24 +1,29 @@
+## 2.0.2
+
+- Add package skills for `ContactListView` and the exported chrome widgets
+- Add Chinese README (`README_zh.md`) with cross-links to the English README
+- Fix the README usage sample: required `itemExtent` / `startItemExtent` / `endItemExtent`, and `material_ui` imports
+
 ## 2.0.1
 
-* update `material_ui` to ^1.3.0
+- update `material_ui` to ^1.3.0
 
 ## 2.0.0
 
 ### Breaking Changes ⚠️
 
-* **Dependency Migration**: Replaced legacy Flutter package imports with `material_ui` and `cupertino_ui` following the Flutter 3.47 package decoupling.
-* **SDK Constraints**: Bumped minimum Flutter SDK requirement to `>=3.44.0`.
+- **Dependency Migration**: Replaced legacy Flutter package imports with `material_ui` and `cupertino_ui` following the Flutter 3.47 package decoupling.
+- **SDK Constraints**: Bumped minimum Flutter SDK requirement to `>=3.44.0`.
 
 ### Features & Improvements
 
-* **Example App**: Updated the example application code and import paths to align with the new dependencies.
-* **Linter & Analysis**: Added build directory exclusions (`build/**`) in `analysis_options.yaml` to optimize static analysis performance.
-
+- **Example App**: Updated the example application code and import paths to align with the new dependencies.
+- **Linter & Analysis**: Added build directory exclusions (`build/**`) in `analysis_options.yaml` to optimize static analysis performance.
 
 ## 1.4.0
 
 - Ultimate performance optimization
-- add `itemExtent`，`startItemExtent`，`endItemExtent`  parameter
+- add `itemExtent`，`startItemExtent`，`endItemExtent` parameter
 - The `startSlivers` parameter should be renamed to `startChildren`.
 - The `endSlivers` parameter has been renamed to `endChildren`.
 - The `startChildren` and `endChildren` parameters no longer require the `Silver` component.
