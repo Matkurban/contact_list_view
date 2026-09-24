@@ -4,6 +4,8 @@
 
 A Flutter sliver-based contact list with A–Z index navigation, sticky section headers, and builders for the index bar, cursor, and headers.
 
+**Live demo:** https://matkurban.github.io/contact_list_view/
+
 ## Features
 
 - Sticky section headers with an optional `stickyHeaderBuilder`

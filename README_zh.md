@@ -4,6 +4,8 @@
 
 基于 Sliver 的 Flutter 联系人列表：A–Z 索引跳转、粘性分组头，以及索引条、游标、分组头的自定义构建器。
 
+**在线示例：** https://matkurban.github.io/contact_list_view/
+
 ## 特性
 
 - 粘性分组头，可用 `stickyHeaderBuilder` 完全自定义
