@@ -1,3 +1,8 @@
+## 2.1.0
+
+- update `material_ui` version to ^1.4.0
+- **SDK Constraints**: Bumped minimum Flutter SDK requirement to `>=3.47.0` and Bumped minimum Dart SDK requirement to `>=3.13.0`
+
 ## 2.0.2
 
 - Add package skills for `ContactListView` and the exported chrome widgets

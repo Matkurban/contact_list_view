@@ -5,20 +5,21 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
   cupertino_icons: ^1.0.9
-  flex_color_scheme: ^8.4.0
+  flex_color_scheme: ^9.0.0
   lpinyin: ^2.0.3
   string_validator: ^1.2.0
   contact_list_view:
     path: ../
   easy_refresh: ^3.5.1
-  material_ui: any
-  cupertino_ui: any
+  material_ui: ^1.4.0
+  cupertino_ui: ^1.1.1
 
 dev_dependencies:
   flutter_test:
