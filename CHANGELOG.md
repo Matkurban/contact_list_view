@@ -1,3 +1,8 @@
+## 2.1.1
+
+- update `material_ui` version to ^1.6.0
+- update `cupertino_ui` version to ^1.1.2
+
 ## 2.1.0
 
 - update `material_ui` version to ^1.4.0
